@@ -15,13 +15,13 @@ class LocationService;
 class NotificationObserver {
 public:
     virtual ~NotificationObserver() {}
-    virtual void update(const std::string& message) = 0;
+    virtual void update(const string& message) = 0;
 };
 
 // Concrete observer
 class UserNotificationObserver : public NotificationObserver {
 private:
-    std::string userId;
+    string userId;
 public:
     UserNotificationObserver(const string& id) {
         userId = id;
@@ -34,7 +34,7 @@ public:
 // Observable for Observer Pattern
 class NotificationService {
 private:
-    std::map<std::string, NotificationObserver*> observers;
+    map<string, NotificationObserver*> observers;
     
     // Singleton Pattern
     static NotificationService* instance;
@@ -132,8 +132,8 @@ public:
 // Interest class
 class Interest {
 private:
-    std::string name;
-    std::string category;
+    string name;
+    string category;
     
 public:
     Interest() {
@@ -146,11 +146,11 @@ public:
         category = c;
     }
     
-    std::string getName() const {
+    string getName() const {
         return name;
     }
     
-    std::string getCategory() const {
+    string getCategory() const {
         return category;
     }
 };
@@ -158,11 +158,11 @@ public:
 // Preference class
 class Preference {
 private:
-    std::vector<Gender> interestedIn;
+    vector<Gender> interestedIn;
     int minAge;
     int maxAge;
     double maxDistance; // in kilometers
-    std::vector<std::string> interests;
+    vector<string> interests;
     
 public:
     Preference() {
@@ -176,7 +176,7 @@ public:
     }
     
     void removeGenderPreference(Gender gender) {
-        interestedIn.erase(std::remove(interestedIn.begin(), interestedIn.end(), gender), interestedIn.end());
+        interestedIn.erase(remove(interestedIn.begin(), interestedIn.end(), gender), interestedIn.end());
     }
     
     void setAgeRange(int min, int max) {
@@ -188,16 +188,16 @@ public:
         maxDistance = distance;
     }
     
-    void addInterest(const std::string& interest) {
+    void addInterest(const string& interest) {
         interests.push_back(interest);
     }
     
-    void removeInterest(const std::string& interest) {
-        interests.erase(std::remove(interests.begin(), interests.end(), interest), interests.end());
+    void removeInterest(const string& interest) {
+        interests.erase(remove(interests.begin(), interests.end(), interest), interests.end());
     }
     
     bool isInterestedInGender(Gender gender) const {
-        return std::find(interestedIn.begin(), interestedIn.end(), gender) != interestedIn.end();
+        return find(interestedIn.begin(), interestedIn.end(), gender) != interestedIn.end();
     }
     
     bool isAgeInRange(int age) const {
@@ -208,11 +208,11 @@ public:
         return distance <= maxDistance;
     }
     
-    const std::vector<std::string>& getInterests() const {
+    const vector<string>& getInterests() const {
         return interests;
     }
     
-    const std::vector<Gender>& getInterestedGenders() const {
+    const vector<Gender>& getInterestedGenders() const {
         return interestedIn;
     }
     
@@ -529,7 +529,7 @@ public:
 class LocationStrategy {
 public:
     virtual ~LocationStrategy() {}
-    virtual std::vector<User*> findNearbyUsers(const Location& location, double maxDistance, const std::vector<User*>& allUsers) = 0;
+    virtual vector<User*> findNearbyUsers(const Location& location, double maxDistance, const vector<User*>& allUsers) = 0;
 };
 
 // Concrete strategy: Basic location strategy
@@ -646,20 +646,20 @@ public:
         }
         
         // Calculate score based on shared interests
-        std::vector<std::string> user1InterestNames;
+        vector<string> user1InterestNames;
         for (const auto& interest : user1->getProfile()->getInterests()) {
             user1InterestNames.push_back(interest->getName());
         }
         
         int sharedInterests = 0;
         for (const auto& interest : user2->getProfile()->getInterests()) {
-            if (std::find(user1InterestNames.begin(), user1InterestNames.end(), interest->getName()) != user1InterestNames.end()) {
+            if (find(user1InterestNames.begin(), user1InterestNames.end(), interest->getName()) != user1InterestNames.end()) {
                 sharedInterests++;
             }
         }
         
         // Bonus score based on shared interests (up to 0.5 additional points)
-        double maxInterests = std::max(user1->getProfile()->getInterests().size(), user2->getProfile()->getInterests().size());
+        double maxInterests = max(user1->getProfile()->getInterests().size(), user2->getProfile()->getInterests().size());
         double interestScore = maxInterests > 0 ? 0.5 * (sharedInterests / maxInterests) : 0.0;
         
         return baseScore + interestScore;
@@ -680,7 +680,7 @@ public:
         
         // Calculate score based on proximity
         double distance = user1->getProfile()->getLocation().distanceInKm(user2->getProfile()->getLocation());
-        double maxDistance = std::min(user1->getPreference()->getMaxDistance(), user2->getPreference()->getMaxDistance());
+        double maxDistance = min(user1->getPreference()->getMaxDistance(), user2->getPreference()->getMaxDistance());
         
         // Closer is better, score decreases with distance (up to 0.2 additional points)
         double proximityScore = maxDistance > 0 ? 0.2 * (1.0 - (distance / maxDistance)) : 0.0;
@@ -764,7 +764,7 @@ public:
         return nullptr;
     }
     
-    std::vector<User*> findNearbyUsers(const std::string& userId, double maxDistance = 5.0) {
+    vector<User*> findNearbyUsers(const string& userId, double maxDistance = 5.0) {
         User* user = getUserById(userId);
         if (user == nullptr) {
             return vector<User*>();
@@ -929,29 +929,29 @@ int main() {
     profile2->setLocation(location2);
 
     // Display user profiles
-    std::cout << "---- User Profiles ----" << std::endl;
+    cout << "---- User Profiles ----" << endl;
     app->displayUser("user1");
     app->displayUser("user2");
     
     // Find nearby users for user1 (within 5km)
-    std::cout << "\n---- Nearby Users for user1 (within 5km) ----" << std::endl;
-    std::vector<User*> nearbyUsers = app->findNearbyUsers("user1", 5.0);
-    std::cout << "Found " << nearbyUsers.size() << " nearby users" << std::endl;
+    cout << "\n---- Nearby Users for user1 (within 5km) ----" << endl;
+    vector<User*> nearbyUsers = app->findNearbyUsers("user1", 5.0);
+    cout << "Found " << nearbyUsers.size() << " nearby users" << endl;
     for (User* user : nearbyUsers) {
-        std::cout << "- " << user->getProfile()->getName() << " (" << user->getId() << ")" << std::endl;
+        cout << "- " << user->getProfile()->getName() << " (" << user->getId() << ")" << endl;
     }
     
     // User1 swipes right on User2
-    std::cout << "\n---- Swipe Actions ----" << std::endl;
-    std::cout << "User1 swipes right on User2" << std::endl;
+    cout << "\n---- Swipe Actions ----" << endl;
+    cout << "User1 swipes right on User2" << endl;
     app->swipe("user1", "user2", SwipeAction::RIGHT);
     
     // User2 swipes right on User1 (creating a match)
-    std::cout << "User2 swipes right on User1" << std::endl;
+    cout << "User2 swipes right on User1" << endl;
     app->swipe("user2", "user1", SwipeAction::RIGHT);
     
     // Send messages in the chat room
-    std::cout << "\n---- Chat Room ----" << std::endl;
+    cout << "\n---- Chat Room ----" << endl;
     app->sendMessage("user1", "user2", "Hi Neha, Kaise ho?");
     
     app->sendMessage("user2", "user1", "Hi Rohan, Ma bdiya tum btao");

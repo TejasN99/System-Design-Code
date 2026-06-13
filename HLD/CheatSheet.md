@@ -52,3 +52,21 @@ Storage	    GBs	    TBs	    PBs
 1M DAU    -> medium
 10M DAU   -> large
 100M DAU  -> internet scale
+
+
+
+
++-------+--------------+-------------------+--------------------+-------------------+------------------+
+| Nines | Availability | Downtime / Year   | Downtime / Month   | Downtime / Week   | Downtime / Day   |
++-------+--------------+-------------------+--------------------+-------------------+------------------+
+| 1     | 90%          | 37 days           | 73 hours           | 17 hours          | 2.4 hours        |
+| 2     | 99%          | 3.7 days          | 7.3 hours          | 1.7 hours         | 14 minutes       |
+| 3     | 99.9%        | 9 hours           | 44 minutes         | 10 minutes        | 1.4 minutes      |
+| 4     | 99.99%       | 53 minutes        | 4.4 minutes        | 1 minute          | 8.6 seconds      |
+| 5     | 99.999%      | 5.3 minutes       | 26 seconds         | 6 seconds         | 860 ms           |
+| 6     | 99.9999%     | 32 seconds        | 2.6 seconds        | 600 ms            | 86 ms            |
+| 7     | 99.99999%    | 3.2 seconds       | 260 ms             | 60 ms             | 8.6 ms           |
+| 8     | 99.999999%   | 320 ms            | 26 ms              | 6 ms              | 860 μs           |
+| 9     | 99.9999999%  | 32 ms             | 2.6 ms             | 600 μs            | 86 μs            |
+| 10    | 99.99999999% | 3.2 ms            | 260 μs             | 60 μs             | 8.6 μs           |
++-------+--------------+-------------------+--------------------+-------------------+------------------+

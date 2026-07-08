@@ -70,3 +70,18 @@ Storage	    GBs	    TBs	    PBs
 | 9     | 99.9999999%  | 32 ms             | 2.6 ms             | 600 μs            | 86 μs            |
 | 10    | 99.99999999% | 3.2 ms            | 260 μs             | 60 μs             | 8.6 μs           |
 +-------+--------------+-------------------+--------------------+-------------------+------------------+
+
+
+
+
+Requirements
+Capacity Estimation
+APIs
+Data Model
+High-Level Architecture
+Core Flow
+Concurrency
+Scaling
+Trade-offs
+Extensions
+Interviewer's Follow-up Questions

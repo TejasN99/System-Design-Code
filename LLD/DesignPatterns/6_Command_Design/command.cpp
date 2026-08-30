@@ -6,6 +6,25 @@ public:
     virtual void execute() = 0;
     virtual void undo() = 0;
     virtual ~ICommand() = default;
+    /*
+    This is written here the destructor because of this
+    Icommand * command = new FanCommand(fan) so when remote control destroys FAncommand 
+    it should destroy the Icommand
+
+    so actual flow is 
+    delete command
+    fancommand is deleted 
+    icommand is deleted
+    release memory
+
+    if we skip this default
+    1. Derived destructor doesn't run
+    2. Resources can remain unreleased
+
+    so this process is not followed 
+
+    so when we use delete through base class we should have virtual destructor
+    */
 };
 
 class Fan{

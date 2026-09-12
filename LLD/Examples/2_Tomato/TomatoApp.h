@@ -78,8 +78,10 @@ public:
 
     Order* checkout(User* user, const string& orderType, 
         PaymentStrategy* paymentStrategy, OrderFactory* orderFactory) {
-        if (user->getCart()->isEmpty())
-        return nullptr;
+        if (user->getCart()->isEmpty()){
+            delete orderFactory;
+            return nullptr;
+        }
 
         Cart* userCart = user->getCart();
         Restaurant* orderedRestaurant = userCart->getRestaurant();
@@ -88,6 +90,8 @@ public:
 
         Order* order = orderFactory->createOrder(user, userCart, orderedRestaurant, itemsOrdered, paymentStrategy, totalCost, orderType);
         OrderManager::getInstance()->addOrder(order);
+        delete orderFactory;
+        // here delete orderfactory is required
         return order;
     }
 

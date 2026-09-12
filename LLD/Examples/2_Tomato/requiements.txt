@@ -1,0 +1,75 @@
+Functional Req
+
+1) User can search for restaurants based on location.
+2) User can add items to cart
+3) User can checkout by making payment
+4) User should be notified once order is successfully placed
+
+Non:
+1) Each part of design should be highly scalable
+
+
+
+-----
+
+Happy Flow
+
+order can be delivery and pickup order 
+restaurants
+menu
+order
+
+
+Payment as a third party service 
+
+user part and delivery agent part 
+which one are we designing 
+
+user and delivery sentric pov
+
+current user focus
+
+
+Notification is sent to the user
+
+
+Also cart
+
+
+--
+
+Top Down and Bottom up approach
+
+1) Bottom up is basically prefereed as we make smaller objects first and then make bigger objects and relations
+2) In Top Down we make big and then make smaller
+
+--
+
+This is Bottom up 
+
+as we make order cart user and all
+
+then establish the relations between them later and make big objects
+
+
+
+-----
+UML
+
+
+Manager should be singleton class
+
+restrauntManager -> restaurants -> menuItem
+
+
+
+user has cart one to one relations
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,18 @@
+This is required because
+
+lets imagine some users need to communicate 
+
+
+u1 u2
+
+u2 should have object of u1 and vise versa 
+
+introduce u3 
+
+all should have n-1 connections 
+
+introduce a mediator so that it will store all objects in central store
+
+
+----
+

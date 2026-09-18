@@ -1,0 +1,4 @@
+1) play pause
+2) songs added in playlist, different strategy playing
+sequential, etc
+3) different audio devices support

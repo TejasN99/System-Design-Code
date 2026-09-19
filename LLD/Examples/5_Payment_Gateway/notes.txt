@@ -1,0 +1,5 @@
+Requirements
+1) Should support multiple providers (Paytm, Razorpay)
+2) we can easily add multiple new gateways in future
+3) There should vbe standard payment flow with validations
+4) Have error handling mechanism and retry mechanism

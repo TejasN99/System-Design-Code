@@ -1,0 +1,7 @@
+1) We add new coupons at runtime
+2) Both cart and product level discounts
+3) Support multiple coupon types 
+    (Seasonal, loyalty discount, banking discount)
+4)Both flat and percentage discount
+5) coupon can/cannot apply on top of one another
+6) Thread safe (let say limited coupons available)

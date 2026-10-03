@@ -1,0 +1,9 @@
+Functional Requiremets
+1) user can left and right swipe to profile
+2) user can setup his or her profile
+3) User can set his or her preference
+4) once there is a match they can chat
+5) User can see all profile near location
+(Based on different startegy)   
+6) Notified when match or message
+7) Matching based on several factors and score (like interest, location etc)

@@ -1,0 +1,8 @@
+1) User can join/ leave group 
+2) User can add Expense in a group
+3) User can settle an Expense
+4) Adding expense should be based on several startegy
+    (Equal, % split, exact split)
+5) User cant leave group without settling expenses
+6) User can also add individual expenses, one on one 
+7) Notification to be sent to user

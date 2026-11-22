@@ -846,3 +846,187 @@ Horizontally scalable
 | Read Receipts       | Event Driven                      |
 | Multi Device        | User-Level Sync                   |
 | Availability        | Replication + Stateless Services  |
+
+
+
+
+
+1. High-level architecture
+
+
+
+                    ┌──────────────────────────────┐
+                    │          CLIENTS             │
+                    │                              │
+                    │  Mobile │ Web │ Desktop      │
+                    └──────────────┬───────────────┘
+                                   │
+                             WebSocket / HTTPS
+                                   │
+                    ┌──────────────▼───────────────┐
+                    │        LOAD BALANCER          │
+                    │   Connection Distribution     │
+                    └──────────────┬───────────────┘
+                                   │
+                 ┌─────────────────▼─────────────────┐
+                 │       CONNECTION SERVERS           │
+                 │                                    │
+                 │  • WebSocket Connections           │
+                 │  • Heartbeats                      │
+                 │  • Push Messages to Clients        │
+                 │  • Connection Management           │
+                 └──────────┬───────────────┬─────────┘
+                            │               │
+                     Send Message       Heartbeats /
+                            │             Presence
+                            │               │
+              ┌─────────────▼──────┐  ┌─────▼──────────────┐
+              │   MESSAGE SERVICE  │  │  PRESENCE SERVICE  │
+              │                    │  │                    │
+              │ • Generate Msg ID  │  │ • Online / Offline │
+              │ • Sequence Number  │  │ • Last Seen        │
+              │ • Validate Request │  │ • Typing Events    │
+              │ • Persist Message  │  └─────────┬──────────┘
+              └───────┬────────────┘            │
+                      │                         │
+              ┌───────▼────────────┐     ┌──────▼───────────┐
+              │    MESSAGE DB      │     │      REDIS       │
+              │                    │     │                  │
+              │ • Messages         │     │ • Presence + TTL │
+              │ • Conversation ID  │     │ • Connection Map │
+              │ • Sequence Number  │     │ • Device Mapping │
+              │ • Delivery State   │     │                  │
+              └───────┬────────────┘     └──────▲───────────┘
+                      │                         │
+                      │ Publish Event           │ Lookup
+                      │                         │
+              ┌───────▼─────────────────────────┴───────┐
+              │                  KAFKA                   │
+              │                                          │
+              │  Partition Key = conversation_id         │
+              │                                          │
+              │  • Message Created Events                │
+              │  • Delivery Events                       │
+              │  • Read Receipt Events                   │
+              └─────────────────────┬────────────────────┘
+                                    │
+                         ┌──────────▼───────────┐
+                         │   DELIVERY WORKERS  │
+                         │                     │
+                         │ • Consume Events    │
+                         │ • Retry Delivery    │
+                         │ • Handle Failures   │
+                         └──────────┬──────────┘
+                                    │
+                         ┌──────────▼───────────┐
+                         │    FANOUT SERVICE   │
+                         │                     │
+                         │ • Get Group Members │
+                         │ • Create Deliveries │
+                         │ • Apply Fanout      │
+                         └──────┬─────────┬────┘
+                                │         │
+                       Online   │         │ Offline
+                                │         │
+                    ┌───────────▼──┐  ┌───▼──────────────┐
+                    │ CONNECTION   │  │   MESSAGE DB /   │
+                    │ SERVER       │  │   INBOX STORE    │
+                    │              │  │                  │
+                    │ Push via WS  │  │ Pending Messages │
+                    └──────┬───────┘  └──────────────────┘
+                           │
+                    ┌──────▼──────────┐
+                    │   RECIPIENT     │
+                    │   CLIENT        │
+                    │                 │
+                    │ Sends Delivery  │
+                    │ ACK             │
+                    └──────┬──────────┘
+                           │
+                           ▼
+                    DELIVERY STATUS
+
+
+
+
+
+
+2. Supporting services
+These services operate alongside the main message-delivery pipeline.
+
+
+
+
+                 ┌─────────────────────────┐
+                 │       KAFKA EVENTS      │
+                 └────────────┬────────────┘
+                              │
+             ┌────────────────┼────────────────┐
+             │                │                │
+      ┌──────▼──────┐  ┌──────▼──────┐  ┌──────▼──────┐
+      │ READ        │  │ SYNC        │  │ NOTIFICATION│
+      │ RECEIPT     │  │ SERVICE     │  │ SERVICE     │
+      │ SERVICE     │  │             │  │             │
+      │             │  │ Multi-device│  │ Push        │
+      │ SENT        │  │ synchronization││ Notifications│
+      │ DELIVERED   │  │             │  │             │
+      │ READ        │  │             │  │             │
+      └──────┬──────┘  └──────┬──────┘  └─────────────┘
+             │                │
+             ▼                ▼
+      ┌─────────────┐  ┌──────────────┐
+      │ STATUS DB   │  │ MESSAGE DB   │
+      │             │  │              │
+      │ Read State  │  │ User Cursor  │
+      └─────────────┘  └──────────────┘
+
+
+3. Group messaging architecture
+
+
+                 ┌───────────────────┐
+                 │    MESSAGE FROM A │
+                 └─────────┬─────────┘
+                           │
+                 ┌─────────▼─────────┐
+                 │  MESSAGE SERVICE  │
+                 │                   │
+                 │ Persist Once      │
+                 │ Generate Sequence │
+                 └─────────┬─────────┘
+                           │
+                     ┌─────▼─────┐
+                     │   KAFKA   │
+                     └─────┬─────┘
+                           │
+                  ┌────────▼────────┐
+                  │ FANOUT SERVICE  │
+                  └────────┬────────┘
+                           │
+                  ┌────────▼────────┐
+                  │  GROUP SERVICE  │
+                  │                 │
+                  │ Fetch Members   │
+                  └────────┬────────┘
+                           │
+                 ┌─────────▼──────────┐
+                 │   FANOUT STRATEGY  │
+                 └─────────┬──────────┘
+                           │
+                ┌──────────┴──────────┐
+                │                     │
+          Small Groups           Large Groups
+                │                     │
+       ┌────────▼────────┐    ┌───────▼────────┐
+       │ FANOUT ON WRITE │    │ FANOUT ON READ │
+       │                 │    │                │
+       │ Inbox Entries   │    │ Store Message  │
+       │ for Recipients  │    │ Once           │
+       └────────┬────────┘    └───────┬────────┘
+                │                     │
+                └──────────┬──────────┘
+                           │
+                    ┌──────▼──────┐
+                    │ RECIPIENTS  │
+                    │ B, C, D, E  │
+                    └─────────────┘
